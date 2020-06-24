@@ -33,7 +33,7 @@ class smmvk(object):
 		return self.favs
 
 	def get_albums(self,owner_id):
-		self.albums = [] ## ['CMH', 'Новый альбом', ['Ненаход','Наход','Переход']]
+		self.albums = [] 
 		tmp=[]
 		k = 0
 		for i in self.vk_audio.get_albums(owner_id):
@@ -45,23 +45,6 @@ class smmvk(object):
 			tmp = []
 		return self.albums
 
-
-	def get_groups(self,owner_id=None):
-		self.check_availability(owner_id)
-		self.groups = []
-		for i in self.vk_audio.get(owner_id):  #Это просто аудиозаписи
-			self.groups.append(str(i['artist']).lower().rstrip())
-		for i in self.vk_audio.get_albums(owner_id):  #А это исполнители
-			self.groups.append(self.vk_audio.get(album_id=i['id'],owner_id=i['owner_id'],access_hash=i['access_hash'])[0]['artist'].lower().rstrip())
-		self.groups = list(set(self.groups))
-		for i in self.groups:
-			if ',' in i:  #"Bi-2" - "Bi-2, Syphonic Orcestr"
-				self.groups[self.groups.index(i)] = i[:i.index(',')]
-				i = i[:i.index(',')]  #Исключение, если в названии и ',' и 'feat'
-			if 'feat' in i:  #"Noize Mc feat Sonny" - "Noize Mc"
-				self.groups[self.groups.index(i)] = i[:i.index(' feat')]
-		return list(set(self.groups))
 if __name__ == "__main__":
 	print('This is module smm-vk. Smoke docs')
-#a = smmvk('dimkilled@yandex.ru', '4dswyv22')
-#print(a.get(None))
+
