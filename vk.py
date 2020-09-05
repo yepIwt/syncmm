@@ -1,12 +1,13 @@
-#	Written by Sergievsky&Finogenova
-#	https://github.com/serg1evsky
-#	2020
+#   Written by Sergievsky&Finogenova
+#   https://github.com/yepiwt
+#   2020
 
 
 from vk_api import VkApi
 from vk_api import audio
 
 class smmvk(object):
+
 	__slots__ = ('vk_audio','albums','favs')
 
 	def __init__(self,login,password):
@@ -24,10 +25,6 @@ class smmvk(object):
 		self.check_availability(owner_id)
 		self.get_favs(owner_id)
 		self.get_albums(owner_id)
-		try:
-			os.remove('vk_config.v2.json')
-		except:
-			return True
 		return True
 
 	def get_favs(self,owner_id):
@@ -80,5 +77,6 @@ class smmvk(object):
 						print(str(song['title']).rstrip().lstrip())
 			os.chdir(cur_dir)
 		print('')
+
 if __name__ == "__main__":
 	print('This is module smm-vk. Smoke docs')
