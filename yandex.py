@@ -1,52 +1,62 @@
-#	Written by Sergievsky&Finogenova
-#	https://github.com/serg1evsky	
-#								2020
+#   Written by Sergievsky&Finogenova
+#   https://github.com/yepiwt
+#   2020
 
 
-import requests as r
-import re
+from yandex_music import Client
 
-MUSIC = "https://music.yandex.ru/users/"
-DEMAND_ALB = "deco-link_muted\" title=\""                           #These
-DEMAND_FAV = "<span class=\"d-track__artists\"><a href=\"/artist/"  #are filters
-IA = 24  #indent on albums (offset)
-IF = 7  #indent on fav (offset)
+#Удаление ненужной информации
+import logging
+logger = logging.getLogger('yandex_music')
+logger.setLevel(logging.ERROR)
 
 class smmyandex(object):
-	__slots__ = ('groups','me')
-	
-	def __init__(self,name):
-		self.me = name
-		self.check_availavility()
 
-	def check_availavility(self):
-		try:
-			r.get(MUSIC+self.me+"/tracks").raise_for_status()
-		except:
-			raise r.exceptions.HTTPError('[ADOE] Access Denied or Empty')
+	__slots__ = ('client','albums','favs')
+
+	def __init__(self,log,pas):
+		client = captcha_key = captcha_answer = None
+		while not client:
+			try:
+				client = Client.from_credentials(log,pas,captcha_answer,captcha_key)
+			except Captcha as e:
+				e.captcha.download('captcha.png')
+				captcha_key = e.captcha.x_captcha_key
+				captcha_answer = input('Число с картинки:')
+		self.client = client
 
 	def get(self):
-		self.groups = []
-		dt = r.get(MUSIC+self.me+"/albums")
-		n = [m.start() for m in re.finditer(DEMAND_ALB,dt.text)]
-		for i in range(len(n)):
-			self.groups.append(dt.text[n[i]+IA:dt.text.index('"', n[i]+IA)])
+		self.get_favs()
+		self.get_albums()
+		return True
 
-		dt = r.get(MUSIC+self.me+"/tracks")
-		n = [m.start() for m in re.finditer(DEMAND_FAV, dt.text)]
-		for i in range(len(n)):
-			d = dt.text.index('title="', n[i])  #Вспомогательная переменная, без нее труднее понять код
-			self.groups.append(dt.text[d+IF:dt.text.index('"',d+IF)])
-		self.groups = list(set(self.groups))
-		
-		for i in self.groups:
-			if ',' in i:  #"Bi-2" - "Bi-2, Syphonic Orcestr"
-				self.groups[self.groups.index(i)] = i[:i.index(',')]
-				i = i[:i.index(',')]  #Исключение, если в названии и ',' и 'feat'
-			if 'feat' in i:  #"Noize Mc feat Sonny" - "Noize Mc"
-				self.groups[self.groups.index(i)] = i[:i.index(' feat')]
-			if '&#' in i:  #Убрать юни-коды
-				self.groups[self.groups.index(i)] = i[:i.index('&')] + i[i.index(';')+1:] 
-		return list(set(self.groups))
+	def get_favs(self):
+		self.favs = []
+		lib = self.client.users_likes_tracks()
+		art = ''
+		for obj in lib:
+			artists = self.client.tracks(str(obj['id'])+':'+str(obj['album_id']))[0]['artists']
+			group = self.client.tracks(str(obj['id'])+':'+str(obj['album_id']))[0]['title']
+			for artist in artists:
+				art += artist['name'] + ','
+				art[:-2]
+			self.favs.append([art, group])
+			art = ''
+		return self.favs
+
+	def get_albums(self):
+		self.albums = []
+		songs = []
+		lib = self.client.users_likes_albums()
+		for album in lib:
+			album_tracks = self.client.albumsWithTracks(album['album']['id'])
+			for k in range(int(album_tracks['track_count'])):
+				songs.append(album_tracks['volumes'][0][k]['title'])
+			artist = album['album']['artists'][0]['name']
+			title = album['album']['title']
+			self.albums.append([artist,title,songs])
+			songs = []
+		return self.albums
+
 if __name__ == "__main__":
 	print('This is module smm-yandex. Smoke docs')
