@@ -12,7 +12,7 @@ logger.setLevel(logging.ERROR)
 
 class smmyandex(object):
 
-	__slots__ = ('client','albums','favs')
+	__slots__ = ('client','albums','favs', 'playlists')
 
 	def __init__(self,log,pas):
 		client = captcha_key = captcha_answer = None
@@ -28,6 +28,7 @@ class smmyandex(object):
 	def get(self):
 		self.get_favs()
 		self.get_albums()
+		self.get_playlists()
 		return True
 
 	def get_favs(self):
@@ -57,6 +58,25 @@ class smmyandex(object):
 			self.albums.append([artist,title,songs])
 			songs = []
 		return self.albums
+
+	def get_playlists(self):
+		self.playlists = []
+		art = ''
+		songs = []
+		lib = self.client.usersPlaylistsList()
+		for playlist in lib:
+			title = playlist['title']
+			playlist_tracks = self.client.users_playlists(playlist['kind'], playlist['owner']['uid'])[0]
+			for track in playlist_tracks['tracks']:
+				song = self.client.tracks(track['id'],track['timestamp'])[0]
+				artists = song['artists']
+				for artist in artists:
+					art += artist['name'] + ', '
+				songs.append([art[:-2],song['title']])
+				art = ''
+			self.playlists.append([title,songs])
+			songs = []
+		return self.playlists
 
 if __name__ == "__main__":
 	print('This is module smm-yandex. Smoke docs')
