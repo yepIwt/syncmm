@@ -8,11 +8,12 @@ from vk_api import audio
 
 class smmvk(object):
 
-	__slots__ = ('vk_audio','albums','favs','playlists')
+	__slots__ = ('client','vk_audio','albums','favs','playlists')
 
 	def __init__(self,login,password):
 		vk_session = VkApi(login=login, password=password)
 		vk_session.auth()
+		self.client = vk_session.get_api()
 		self.vk_audio = audio.VkAudio(vk_session)
 
 	def check_availability(self,owner_id):
@@ -58,13 +59,13 @@ class smmvk(object):
 			if alb['owner_id'] > 0:
 				title = alb['title'] #Название плейлиста
 				alb_song = self.vk_audio.get(album_id=alb['id'],owner_id=alb['owner_id'],access_hash=alb['access_hash'])
-				art = alb_song[0]['artist']
+				art_info = self.client.users.get(user_ids = alb['owner_id'])[0]
+				art = art_info['first_name'] + ' ' + art_info['last_name']
 				for song in alb_song:
 					songs.append(song['title'])
-				
 				self.playlists.append([art,title,songs])
 			songs = []
 		return self.playlists
-
+		
 if __name__ == "__main__":
 	print('This is module smm-vk. Smoke docs')
