@@ -25,47 +25,34 @@ class smmvk(object):
 	def get(self,owner_id=None):
 		self.check_availability(owner_id)
 		self.get_favs(owner_id)
-		self.get_albums(owner_id)
-		self.get_playlists(owner_id)
+		self.get_albums_with_playlists(owner_id)
 		return True
 
-	def get_favs(self,owner_id):
+	def get_favs(self,owner_id=None):
 		self.favs = []
 		for i in self.vk_audio.get(owner_id):
 			self.favs.append([i['artist'],i['title']])
 		return self.favs
 	
-	def get_albums(self,owner_id):
+	def get_albums_with_playlists(self,owner_id=None):
 		self.albums = []
-		songs = []
-		lib = self.vk_audio.get_albums(owner_id)
-		for alb in lib:
-			if alb['owner_id'] < 0:
-				title = alb['title'] #Название альбома
-				alb_song = self.vk_audio.get(album_id=alb['id'],owner_id=alb['owner_id'],access_hash=alb['access_hash'])
-				art = alb_song[0]['artist']
-				for song in alb_song:
-					songs.append(song['title'])
-				
-				self.albums.append([art,title,songs])
-			songs = []
-		return self.albums
-	
-	def get_playlists(self,owner_id):
 		self.playlists = []
 		songs = []
 		lib = self.vk_audio.get_albums(owner_id)
 		for alb in lib:
+			title = alb['title'] #Название альбома 
+			alb_song = self.vk_audio.get(album_id=alb['id'],owner_id=alb['owner_id'],access_hash=alb['access_hash'])
+			for song in alb_song:
+				songs.append(song['title'])
 			if alb['owner_id'] > 0:
-				title = alb['title'] #Название плейлиста
-				alb_song = self.vk_audio.get(album_id=alb['id'],owner_id=alb['owner_id'],access_hash=alb['access_hash'])
-				art_info = self.client.users.get(user_ids = alb['owner_id'])[0]
+				art_info = art_info = self.client.users.get(user_ids = alb['owner_id'])[0]
 				art = art_info['first_name'] + ' ' + art_info['last_name']
-				for song in alb_song:
-					songs.append(song['title'])
 				self.playlists.append([art,title,songs])
+			else:
+				art = alb_song[0]['artist']
+				self.albums.append([art,title,songs])
 			songs = []
-		return self.playlists
+		return [self.albums,self.playlists]
 		
 if __name__ == "__main__":
 	print('This is module smm-vk. Smoke docs')
