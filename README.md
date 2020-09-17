@@ -44,6 +44,8 @@ audios.favs
 >> [['CoolArtist#1','CoolSong#1'], ['CoolArtist#2','CoolSong#2']
 audios.albums
 >> [['CoolGroup#1','CoolTitle',['CoolSong#3','CoolSong#4','CoolSong#5'],['BadGroup#1','BadTitle',['BadSong#1','BadSong#2','BadSong#3']]]
+self.playlists
+>> [['CoolAuthor#1','CoolTitle',['CoolSong#6','CoolSong#7','CoolSong#8']],['BadAuthor#1','BadTitle',['BadSong#4','BadSong#5','BadSong#6']]]
 ```
 
 ## Авторы
