@@ -4,3 +4,4 @@
 
 from .yandex import smmyandex as yandex
 from .vk import smmvk as vk
+from .spotify import smmspotify as spotify
