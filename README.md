@@ -12,6 +12,7 @@ Sync My Music
 
 * VK
 * Yandex Music
+* Spotify
 
 ### Установка
 
@@ -37,21 +38,16 @@ pip install syncmm
 ```
 log = 'cooldude@coolemail.com'
 passw = 'passwordforcoolguy'
-audios = syncmm.vk(log,passw) # на место vk можно вставить yandex
+audios = syncmm.vk(log,passw) # на место vk можно вставить yandex/spotify
 audios.get()
 >> True
 audios.favs
->> [['CoolArtist#1','CoolSong#1'], ['CoolArtist#2','CoolSong#2']
+>> [['CoolArtist#1','CoolSong#1','LinkToACoolSong#1'], ['CoolArtist#2','CoolSong#2','LinkToACoolSong#2]]
 audios.albums
->> [['CoolGroup#1','CoolTitle',['CoolSong#3','CoolSong#4','CoolSong#5'],['BadGroup#1','BadTitle',['BadSong#1','BadSong#2','BadSong#3']]]
+>> [['CoolGroup#1','CoolTitle',[['CoolSong#3','LinkToACoolSong#3'],['CoolSong#4','LinkToACoolSong#4'],'['CoolSong#5','LinkToACoolSong#5']]],['BadGroup#1','BadTitle',[['BadSong#1','LinkToABadSong#1'],['BadSong#2','LinkToABadSong#2'],['BadSong#3','LinkToABadSong#3']]]]
 self.playlists
->> [['CoolAuthor#1','CoolTitle',['CoolSong#6','CoolSong#7','CoolSong#8']],['BadAuthor#1','BadTitle',['BadSong#4','BadSong#5','BadSong#6']]]
+>> [['CoolAuthor#1','CoolTitle',[['CoolArtist#6','CoolSong#6','LinkToACoolSong#6'],['CoolArtist#7','CoolSong#8','LinkToACoolSong#8'],['CoolArtist#8','CoolSong#3','LinkToACoolSong#3']]],['BadAuthor#1','BadTitle',[['BadArtist#4','BadSong#4','LinkToABadSong#4'],['BadArtist#5','BadSong#5','LinkToABadSong#5'],['BadArtist#6','BadSong#6','LinkToABadSong#6']]]]
 ```
-
-## Авторы
-
-@[yepiwt](http://github.com/yepiwt "какой у меня классный ник")
- и @[gepeusea](https://github.com/gepeusea "классно рисует кстати")
 
 ## Лицензия
 
