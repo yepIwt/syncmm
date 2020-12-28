@@ -5,6 +5,7 @@
 
 from vk_api import VkApi
 from vk_api import audio
+import asyncio
 
 class smmvk(object):
 
@@ -16,20 +17,23 @@ class smmvk(object):
 		self.client = vk_session.get_api()
 		self.vk_audio = audio.VkAudio(vk_session)
 
-	def check_availability(self,owner_id):
+	async def check_availability(self,owner_id):
 		try:
 			self.vk_audio.get(owner_id=owner_id)
 		except:
 			print('Access Denied or Empty')
 			exit()
 
-	def get(self,owner_id=None):
-		self.check_availability(owner_id)
-		self.get_favs(owner_id)
-		self.get_albums_with_playlists(owner_id)
+	async def main(self,owner_id=None):
+		await self.check_availability(owner_id)
+		await self.get_favs(owner_id)
+		await self.get_albums_with_playlists(owner_id)
+		
+	def get(self):
+		asyncio.run(self.main())
 		return True
 
-	def get_favs(self,owner_id):
+	async def get_favs(self,owner_id):
 		self.favs = []
 		for song in self.vk_audio.get(owner_id):
 			arg = {
@@ -39,8 +43,8 @@ class smmvk(object):
 			}
 			self.favs.append(arg)
 		return self.favs
-	
-	def get_albums_with_playlists(self,owner_id):
+
+	async def get_albums_with_playlists(self,owner_id):
 		self.albums = []
 		self.playlists = []
 		songs = []
@@ -53,13 +57,13 @@ class smmvk(object):
 							'artist': playlist_songs['artist'],
 							'title': playlist_songs['title'],
 							'link': playlist_songs['url']
-                		}
+                        }
 						songs.append(track)
 					author_iter = self.client.users.get(user_ids = obj['owner_id'])[0]
 					author = author_iter['first_name'] + ' ' + author_iter['last_name']
 					arg = {
-						'title': obj['title'], 
-						'author': author, 
+						'title': obj['title'],
+						'author': author,
 						'tracks': songs,
 					}
 					self.playlists.append(arg)
