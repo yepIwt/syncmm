@@ -1,4 +1,4 @@
-![pic](https://i.imgur.com/2BqkM3J.jpg)
+![pic](https://i.imgur.com/cNxViO4.png)
 
 Sync My Music
 =============
