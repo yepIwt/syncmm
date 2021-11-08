@@ -1,0 +1,5 @@
+git+https://github.com/kokarare1212/librespot-python
+bs4
+vk_api
+yandex_music
+spotipy
