@@ -76,6 +76,25 @@ class Library:
 			self.__get_user_albums()
 		return self.__process_albums_data(self.__tracks)
 
+	def __get_a_track_by_uri(self, uri: str):
+		data = self.__api.track(uri)
+		n = {
+			'title': data['name'],
+			'album': data['album']['name'],
+			'artists': [art['name'] for art in data['album']['artists']],
+			'uri': data['uri'],
+			'cover_url': data['album']['images'][0]['url'],
+			'track_num': data['track_number'],
+		}
+		return n
+
+	def __link_parse(self, link):
+		start = link.find("track/")
+		if start == -1:
+			return None
+		end = link.find("?si")
+		return "spotify:track:{}".format(link[start+6:end])
+
 	def liked(self):
 		self.__tracks = []
 		return self.__get_liked_tracks()
@@ -83,3 +102,10 @@ class Library:
 	def albums(self):
 		self.__tracks = []
 		return self.__get_user_albums()
+
+	def get_by_url(self, link: str):
+		uri = self.__link_parse(link)
+		return self.get_by_uri(uri)
+
+	def get_by_uri(self, uri: str):
+		return self.__get_a_track_by_uri(uri)	
