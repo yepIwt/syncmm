@@ -10,14 +10,17 @@ class Library:
 
 	__scope = "user-library-read"
 	__tracks = []
+	_access_token = None
 
 	def __init__(self, login: str = None, password: str = None, token: str = None):
 		if token:
+			self._access_token = token
 			self.__api = spotipy.Spotify(auth = token)
 		else:
 			session = Session.Builder().user_pass(login, password).create()
-			access_token = session.tokens().get(self.__scope)
-			self.__api = spotipy.Spotify(auth = access_token)
+			self._access_token = session.tokens().get(self.__scope)
+			self._session = session
+			self.__api = spotipy.Spotify(auth = self._access_token)
 
 	def __process_tracks_data(self, data: list):
 		
@@ -76,7 +79,7 @@ class Library:
 			self.__get_user_albums()
 		return self.__process_albums_data(self.__tracks)
 
-	def __get_a_track_by_uri(self, uri: str):
+	def _get_a_track_by_uri(self, uri: str):
 		data = self.__api.track(uri)
 		n = {
 			'title': data['name'],
